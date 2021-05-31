@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>条形图</title>
+    <script src="../../js/echarts.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+    <script src="../../config.js"></script>
+</head>
+<body>
+<div id="box3" style="width: 1025px;height: 750px;"></div>
+<script>
+    var myChar3 = echarts.init(document.getElementById('box3'));
+    function fun3(data1,data2){
+        var option3 ={
+            xAxis: {
+        type: 'category',
+        data: data1,
+    },
+            title:{
+                text:"各车次商务座剩余票数"
+            },
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        data: data2,
+        type: 'line'
+    }]
+        };
+        myChar3.setOption(option3);
+    }
+    $.ajax({
+        type:'GET',
+        url:getHost() + '/ticket/list_monthly_ticket_total',
+        success:function (data){
+            console.log(data.data.names)
+            if (data.code === 0) {
+                    fun3(data.data.names,data.data.values)
+                    //return renderTiaoXing(data.data.xData, data.data.yData)
+                } else {
+                    layer.msg(data.msg)
+                }
+        }
+    }).error(function (data){
+    });
+</script>
+</body>
+</html>

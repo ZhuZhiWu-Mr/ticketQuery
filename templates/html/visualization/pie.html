@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>各类型座位剩余票数</title>
+    <script src="../../js/echarts.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+    <script src="../../config.js"></script>
+</head>
+<body>
+<div id="box" style="width: 1025px;height: 750px;"></div>
+<script>
+
+    var myChart = echarts.init(document.getElementById('box'));
+    function fun(data1){
+        var option = {
+            legend: {
+                orient:"vertical",
+                left:"left"
+            },
+            title: {
+                text: '各类型座位剩余票数',
+                left: "center"
+            },
+            toolbox: {
+                show: true
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter:"{a}<br/>{b}:{c}({d}%)",
+                confine: true
+            },
+            series: [
+                {
+                    name: "南丁格尔图",
+                    type: 'pie',
+                    radius: [50, 300],
+                    center: ["50%", "50%"],
+                    roseType: "area",
+                    itemStyle: {
+                        borderRadius: 8
+                    },
+                    data: data1
+                }
+            ]
+        };
+        myChart.setOption(option);
+        }
+        $.ajax({
+            type: 'GET',
+            url: getHost() + '/ticket/list_seat_type_total',
+            // beforeSend: function (request) {
+            //     request.setRequestHeader("token", getCookie("token"));
+            // },
+            success: function (data) {
+                //data = JSON.parse(data)
+                console.log(data.data)
+                if (data.code === 0) {
+                    fun(data.data)
+                    //return renderTiaoXing(data.data.xData, data.data.yData)
+                } else {
+                    layer.msg(data.msg)
+                }
+            }
+        }).error(function (data) {
+        });
+</script>
+</body>
+</html>

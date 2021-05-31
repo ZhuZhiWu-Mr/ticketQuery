@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title> 单项项目列表修改</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="../../css/font.css">
+    <link rel="stylesheet" href="../../css/xadmin.css">
+    <script src="../../lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../../js/xadmin.js"></script>
+    <script src="../../config.js"></script>
+    <script src="../../js/utils.js"></script>
+</head>
+
+<body style="background: #fff;padding-right: 10px;">
+<form style="padding-right: 10px;padding-top:10px" class=" layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">出发时间</label>
+        <div class="layui-input-inline">
+            <input name="startTime" lay-verify="required" type="text" class="layui-input" id="test5"
+                   placeholder="选择出发时间">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">到达时间</label>
+        <div class="layui-input-inline">
+            <input name="arriveTime" lay-verify="required" type="text" class="layui-input" id="arrvieTimeId"
+                   placeholder="选择到达时间">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">车次类型</label>
+        <div class="layui-input-block">
+            <input type="text" name="trainType" id="trainTypeInput" class="layui-input"
+                   style="position:absolute;z-index:2;width:80%;" lay-verify="required" placeholder="请选择或者输入"
+                   onkeyup="trainTypeSearch()"
+                   autocomplete="off">
+            <select type="text" id="trainTypeSelect" lay-filter="trainTypeSelect" autocomplete="off"
+                    placeholder="输入或选择车次" class="layui-select" lay-search>
+                <script id="trainTypeTpl" type="text/html">
+                    {{{# layui.each(d.data.trainTypes, function(index, item){ }}
+                    <option value="{{ item.typeName }}">{{ item.typeName }}</option>
+                    {{# }); }}
+                </script>
+            </select>
+        </div>
+    </div>
+
+
+    <!--<div class="layui-form-item">
+        <label class="layui-form-label">座位档次</label>
+        <div class="layui-input-block">
+            <input type="text" name="positionType" id="positionId" class="layui-input"
+                   style="position:absolute;z-index:2;width:80%;" lay-verify="required" placeholder="输入或选择座位档次"
+                   onkeyup="positionTypeSearch()"
+                   autocomplete="off">
+            <select type="text" id="positionSelect" lay-filter="positionSelect" autocomplete="off" placeholder="输入或选择座位档次"
+                    class="layui-select" lay-search>
+                <script id="positionTpl" type="text/html">
+                    {{{# layui.each(d.data.positionTypes, function(index, item){ }}
+                    <option value="{{ item.positionName }}">{{ item.positionName }}</option>
+                    {{# }); }}
+                </script>
+            </select>
+        </div>
+    </div>
+    -->
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">搜索选择框</label>
+            <div class="layui-input-inline">
+                <select name="positionType" id="positionSelect" lay-verify="required" lay-search="">
+                    <option value="">直接选择或搜索选择</option>
+                    <script id="positionTpl" type="text/html">
+                        {{{# layui.each(d.data.positionTypes, function(index, item){ }}
+                        <option value="{{ item.positionName }}">{{ item.positionName }}</option>
+                        {{# }); }}
+                    </script>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">出发地</label>
+        <div class="layui-input-block">
+            <input type="text" name="startPlace" id="startPlaceInput" class="layui-input"
+                   style="position:absolute;z-index:2;width:80%;" lay-verify="required" placeholder="出发城市"
+                   onkeyup="startPlaceSearch()"
+                   autocomplete="off">
+            <select type="text" id="startPlaceSelect" lay-filter="startPlaceSelect" autocomplete="off"
+                    class="layui-select" lay-search>
+                <script id="startPlaceTpl" type="text/html">
+                    {{{# layui.each(d.data.placeTypes, function(index, item){ }}
+                    <option value="{{ item.placeName }}">{{ item.placeName }}</option>
+                    {{# }); }}
+                </script>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">目的地</label>
+        <div class="layui-input-block">
+            <input type="text" name="targetPlace" id="targetPlaceInput" class="layui-input"
+                   style="position:absolute;z-index:2;width:80%;" lay-verify="required" placeholder="请选择或者输入"
+                   onkeyup="search()"
+                   autocomplete="off">
+            <select id="targetPlaceSelect" lay-filter="targetPlaceSelect" type="text" autocomplete="off"
+                    placeholder="输入或选择目标城市" class="layui-select" lay-search>
+                <script id="targetPlaceTpl" type="text/html">
+                    {{{# layui.each(d.data.placeTypes, function(index, item){ }}
+                    <option value="{{ item.placeName }}">{{ item.placeName }}</option>
+                    {{# }); }}
+                </script>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商务座：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="shangWu" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">一等座：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="yiDeng" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">二等座：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="erDeng" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">高级软卧：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="gaoJiRuanWo" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">动卧：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="dongWo" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">硬卧：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="yingWo" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">软座：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="ruanZuo" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">硬座：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="yingZuo" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">无座：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="wuZuo" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">其他：</label>
+        <div class="layui-input-inline">
+            <input type="number" placeholder="剩余票数 默认0" name="qiTa" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input type="text" name="arriveType" lay-verify="required" autocomplete="off" placeholder="正点/晚点"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script src="../../config.js"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use(['laytpl', 'form', 'layedit', 'laydate', 'layer'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            layedit = layui.layedit,
+            laytpl = layui.laytpl,
+            laydate = layui.laydate;
+        //日期时间选择器
+        laydate.render({
+            elem: '#test5'
+            , type: 'datetime'
+        });
+        //日期时间选择器
+        laydate.render({
+            elem: '#arrvieTimeId'
+            , type: 'datetime'
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            data = JSON.stringify(data.field)
+            console.log(data)
+
+            $.ajax({
+                type: 'POST',
+                url: getHost() + '/ticket/tickets',
+                data: {
+                    addData: data
+                },
+                headers: {
+                    "Authorization": getCookie('token')//此处放置请求到的用户token
+                },
+                success: function (data) {
+                    console.log(data.data)
+                    if (data.code === 0) {
+                        layer.msg("添加成功，关闭窗口，即可刷新数据");
+
+                    } else if ((data.code === 4) && (window.top !== window)) {
+                        window.top.location = window.location.href = 'login/login.html'
+                    } else {
+                        layer.msg(data.msg)
+                    }
+                }
+            }).error(function (data) {
+            });
+            // 重置表单
+            // $("form")[0].reset();
+            return false;
+        });
+
+        $.ajax({
+            type: 'GET',
+            url: getHost() + '/ticket/list_train_place_position',
+            headers: {
+                "Authorization": getCookie('token')//此处放置请求到的用户token
+            },
+            success: function (data) {
+                if (data.code === 0) {
+                    // 座位标准
+                    var getPositionTpl = positionTpl.innerHTML
+                        , positionSelect = document.getElementById('positionSelect');
+                    laytpl(getPositionTpl).render(data, function (html) {
+                        positionSelect.innerHTML = html;
+                    });
+
+                    // 车次类型数据
+                    var getTrainTypeTpl = trainTypeTpl.innerHTML
+                        , trainTypeSelect = document.getElementById('trainTypeSelect');
+                    laytpl(getTrainTypeTpl).render(data, function (html) {
+                        trainTypeSelect.innerHTML = html;
+                    });
+
+                    // 出发地
+                    var getstartPlaceTpl = startPlaceTpl.innerHTML
+                        , startPlaceSelect = document.getElementById('startPlaceSelect');
+                    laytpl(getstartPlaceTpl).render(data, function (html) {
+                        startPlaceSelect.innerHTML = html;
+                    });
+
+                    // 目的地
+                    var getTargetPlaceTpl = targetPlaceTpl.innerHTML
+                        , targetPlaceSelect = document.getElementById('targetPlaceSelect');
+                    laytpl(getTargetPlaceTpl).render(data, function (html) {
+                        targetPlaceSelect.innerHTML = html;
+                    });
+
+                    form.render("select");
+                } else if ((data.code === 4) && (window.top !== window)) {
+                    window.top.location = window.location.href = 'login/login.html'
+                } else {
+                    layer.msg(data.msg)
+                }
+            }
+        }).error(function (data) {
+        });
+
+
+        // 座位类型
+        form.on('select(positionSelect)', function (data) {   //选择输入搜索框赋值给input框
+            $("#positionId").val(data.value);
+            $("#positionSelect").next().find("dl").css({"display": "none"});
+            form.render();
+        });
+        window.positionTypeSearch = function () {
+            var value = $("#positionId").val();
+            $("#positionSelect").val(value);
+            form.render();
+            $("#positionSelect").next().find("dl").css({"display": "block"});
+            var dl = $("#positionSelect").next().find("dl").children();
+            var j = -1;
+            for (var i = 0; i < dl.length; i++) {
+                if (dl[i].innerHTML.indexOf(value) <= -1) {
+                    dl[i].style.display = "none";
+                    j++;
+                }
+                if (j == dl.length - 1) {
+                    $("#positionSelect").next().find("dl").css({"display": "none"});
+                }
+            }
+        };
+
+        // 车次类型
+        form.on('select(trainTypeSelect)', function (data) {   //选择输入搜索框赋值给input框
+            $("#trainTypeInput").val(data.value);
+            $("#trainTypeSelect").next().find("dl").css({"display": "none"});
+            form.render();
+        });
+        window.trainTypeSearch = function () {
+            var value = $("#trainTypeInput").val();
+            $("#trainTypeSelect").val(value);
+            form.render();
+            $("#trainTypeSelect").next().find("dl").css({"display": "block"});
+            var dl = $("#trainTypeSelect").next().find("dl").children();
+            var j = -1;
+            for (var i = 0; i < dl.length; i++) {
+                if (dl[i].innerHTML.indexOf(value) <= -1) {
+                    dl[i].style.display = "none";
+                    j++;
+                }
+                if (j == dl.length - 1) {
+                    $("#trainTypeSelect").next().find("dl").css({"display": "none"});
+                }
+            }
+        };
+        // 出发地
+        form.on('select(startPlaceSelect)', function (data) {   //选择输入搜索框赋值给input框
+            $("#startPlaceInput").val(data.value);
+            $("#startPlaceSelect").next().find("dl").css({"display": "none"});
+            form.render();
+        });
+        window.startPlaceSearch = function () {
+            var value = $("#startPlaceInput").val();
+            $("#startPlaceSelect").val(value);
+            form.render();
+            $("#startPlaceSelect").next().find("dl").css({"display": "block"});
+            var dl = $("#startPlaceSelect").next().find("dl").children();
+            var j = -1;
+            for (var i = 0; i < dl.length; i++) {
+                if (dl[i].innerHTML.indexOf(value) <= -1) {
+                    dl[i].style.display = "none";
+                    j++;
+                }
+                if (j == dl.length - 1) {
+                    $("#startPlaceSelect").next().find("dl").css({"display": "none"});
+                }
+            }
+        };
+
+        // 目的地
+        form.on('select(targetPlaceSelect)', function (data) {   //选择输入搜索框赋值给input框
+            $("#targetPlaceInput").val(data.value);
+            $("#targetPlaceSelect").next().find("dl").css({"display": "none"});
+            form.render();
+        });
+        window.search = function () {
+            var value = $("#targetPlaceInput").val();
+            $("#targetPlaceSelect").val(value);
+            form.render();
+            $("#targetPlaceSelect").next().find("dl").css({"display": "block"});
+            var dl = $("#targetPlaceSelect").next().find("dl").children();
+            var j = -1;
+            for (var i = 0; i < dl.length; i++) {
+                if (dl[i].innerHTML.indexOf(value) <= -1) {
+                    dl[i].style.display = "none";
+                    j++;
+                }
+                if (j == dl.length - 1) {
+                    $("#targetPlaceSelect").next().find("dl").css({"display": "none"});
+                }
+            }
+        };
+
+    });
+</script>
+</body>
+
+</html>

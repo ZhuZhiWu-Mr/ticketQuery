@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../../js/echarts.min.js"></script>
+    <script src="../../js/jquery.min.js"></script>
+    <script src="../../config.js"></script>
+</head>
+<body>
+<div id="box1" style="width: 1025px;height: 750px"></div>
+<script>
+    var mychar2 = echarts.init(document.getElementById("box1"));
+
+    function fun2(datax, datay) {
+        option2 = {
+            xAxis: {
+                type: 'category',
+                data: datax
+            },
+            title: {
+                text: "购票数量最多的出发城市前十"
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: datay,
+                type: 'bar'
+            }]
+        };
+        mychar2.setOption(option2);
+    }
+
+    $.ajax({
+        type: 'GET',
+        url: getHost() + '/ticket/list_most_cities',
+        // beforeSend: function (request) {
+        //     request.setRequestHeader("token", getCookie("token"));
+        // },
+        success: function (data) {
+            //data = JSON.parse(data)
+            console.log(data.data.names)
+            if (data.code === 0) {
+                fun2(data.data.names, data.data.values)
+                //return renderTiaoXing(data.data.xData, data.data.yData)
+            } else {
+                layer.msg(data.msg)
+            }
+        }
+    }).error(function (data) {
+    });
+</script>
+</body>
+</html>
